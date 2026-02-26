@@ -16,6 +16,9 @@ pipeline {
                 docker rm -f backend1 backend2 || true
                 docker run -d --name backend1 --network app-network backend-app
                 docker run -d --name backend2 --network app-network backend-app
+                
+                # Manual Fix: Wait for backend containers to initialize [cite: 749]
+                sleep 3
                 '''
             }
         }
@@ -29,6 +32,9 @@ pipeline {
                   --network app-network \
                   -p 80:80 \
                   nginx
+                
+                # Manual Fix: Wait for NGINX container to start before reloading config [cite: 750]
+                sleep 2
                 
                 docker cp nginx/default.conf nginx-lb:/etc/nginx/conf.d/default.conf
                 docker exec nginx-lb nginx -s reload
